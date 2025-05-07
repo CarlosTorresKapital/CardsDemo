@@ -1,5 +1,9 @@
 package com.example.demo
 
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.Box
@@ -13,6 +17,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FractionalThreshold
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ResistanceConfig
 import androidx.compose.material.Text
 import androidx.compose.material.rememberSwipeableState
 import androidx.compose.material.swipeable
@@ -20,6 +25,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -77,24 +83,29 @@ fun DragScreen() {
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun StackedDraggableCards() {
-    // Número de cards (puedes hacerlo dinámico)
-    val cardCount = 4
-    // Estado para controlar si las cards están expandidas o apiladas
+    val cardCount = 3
     val isExpanded = remember { mutableStateOf(false) }
-    // Estado para el arrastre de la card frontal
     val swipeState = rememberSwipeableState(initialValue = 0)
-
-    // Offset entre cards cuando están apiladas
-    val stackedOffset = 30.dp
-    // Altura de cada card (ajusta según tu diseño)
     val cardHeight = 200.dp
+    val stackedOffset = 30.dp
+    val density = LocalDensity.current
 
-    // Cuando el desplazamiento supera 30px, alternamos el estado
+    // Convertimos valores a píxeles
+    val thresholdPx = with(density) { 30.dp.toPx() }
+    val cardHeightPx = with(density) { cardHeight.toPx() }
+    val stackedOffsetPx = with(density) { stackedOffset.toPx() }
+
+    // Animación para el offset de expansión
+    val expansionProgress by animateFloatAsState(
+        targetValue = if (isExpanded.value) 1f else 0f,
+        animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+        label = "expansionProgress"
+    )
+
+    // Efecto para detectar cuando superamos el threshold
     LaunchedEffect(swipeState.offset.value) {
-        if (abs(swipeState.offset.value) > 30 && !isExpanded.value) {
+        if (abs(swipeState.offset.value) > thresholdPx && !isExpanded.value) {
             isExpanded.value = true
-        } else if (abs(swipeState.offset.value) <= 30 && isExpanded.value) {
-            isExpanded.value = false
         }
     }
 
@@ -103,36 +114,57 @@ fun StackedDraggableCards() {
             .fillMaxWidth()
             .height(cardHeight * cardCount + stackedOffset * (cardCount - 1))
     ) {
-        // Dibujamos las cards desde la última hasta la primera (para el apilado correcto)
         (cardCount - 1 downTo 0).forEach { index ->
-            val offset = if (isExpanded.value) {
-                // Estado expandido: cards una debajo de otra
-                (cardHeight + stackedOffset) * index
+            // Calculamos la posición base sin drag
+            val baseOffset = if (isExpanded.value) {
+                (cardHeightPx + stackedOffsetPx) * index
             } else {
-                // Estado apilado: cards superpuestas con offset
-                stackedOffset * index
+                stackedOffsetPx * index
             }
+
+            // Aplicamos el progreso de animación para suavizar la transición
+            val animatedOffset = if (!isExpanded.value) {
+                baseOffset + swipeState.offset.value
+            } else {
+                baseOffset * expansionProgress
+            }
+
+            // Solo la card superior es draggable
+            val dragModifier = if (index == 0 && !isExpanded.value) {
+                Modifier.swipeable(
+                    state = swipeState,
+                    anchors = mapOf(0f to 0),
+                    thresholds = { _, _ -> FractionalThreshold(0.3f) },
+                    orientation = Orientation.Vertical,
+                    resistance = ResistanceConfig(
+                        basis = cardHeightPx,
+                        factorAtMin = 0.5f,
+                        factorAtMax = 0.5f
+                    )
+                )
+            } else Modifier
 
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(cardHeight)
-                    .offset(y = offset)
-                    // Solo hacemos draggable la card frontal (index 0)
-                    .then(if (index == 0) Modifier.swipeable(
-                        state = swipeState,
-                        anchors = mapOf(0f to 0, 1f to 1),
-                        thresholds = { _, _ -> FractionalThreshold(0.3f) },
-                        orientation = Orientation.Vertical
-                    ) else Modifier),
-                elevation = CardDefaults.cardElevation(defaultElevation = (cardCount - index).dp)
+                    .offset {
+                        IntOffset(
+                            0,
+                            animatedOffset.roundToInt()
+                        )
+                    }
+                    .then(dragModifier),
+                elevation = CardDefaults.cardElevation((cardCount - index).dp)
             ) {
-                // Contenido de tu card
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text("Card ${index + 1}")
+                    Text(
+                        text = "Card ${index + 1}",
+                        style = MaterialTheme.typography.h1
+                    )
                 }
             }
         }

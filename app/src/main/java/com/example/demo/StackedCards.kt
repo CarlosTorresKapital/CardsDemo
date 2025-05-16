@@ -93,10 +93,10 @@ fun StackedCards(
                     enter = if (i != 0) {
                         fadeIn(animationSpec = tween(1000)) + slideInVertically(
                             // Aparece desde abajo
-                            initialOffsetY = { -it },
+                            initialOffsetY = { it },
                             animationSpec = spring(
-                                dampingRatio = Spring.DampingRatioMediumBouncy,
-                                stiffness = Spring.StiffnessLow
+                                dampingRatio = Spring.DampingRatioLowBouncy,
+                                stiffness = Spring.StiffnessVeryLow
                             )
                         )
                     } else {
@@ -148,7 +148,7 @@ fun StackedCards(
                                     ).show()
                                     //expanded = !expanded
                                 },
-                            cardNumber = cardNumbers[i],
+                            cardNumber = i.toString(),
                             type = if (i % 2 == 0) 1 else 2,
                             isHidden = i == cardNumbers.lastIndex - 1 || i == cardNumbers.lastIndex - 2
                         )

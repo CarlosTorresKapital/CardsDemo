@@ -14,7 +14,7 @@ fun NavManager() {
 
     NavHost(
         navController = navController,
-        startDestination = "Cards"
+        startDestination = "Drag"
     ){
 
         composable (

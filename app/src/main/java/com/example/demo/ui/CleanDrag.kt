@@ -4,6 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -40,6 +41,8 @@ fun CleanDrag(
     modifier: Modifier = Modifier
 ) {
 
+    val cardsToPrint = listOf(1, 2)
+
     BoxWithConstraints(
         modifier = modifier.fillMaxSize()
     ) {
@@ -47,6 +50,11 @@ fun CleanDrag(
         val boxHeightDP = this.maxHeight
         val containerHeightPx = with(LocalDensity.current) {
             boxHeightDP.toPx()
+        }
+
+        val defaultOffset = 30.dp
+        val defaultOffsetPx = with(LocalDensity.current) {
+            defaultOffset.toPx()
         }
 
         val cardHeight = 190.dp
@@ -57,45 +65,74 @@ fun CleanDrag(
         val swipeableState = rememberSwipeableState(0)
         val anchors = mapOf(
             0f to 0,
-            containerHeightPx - cardHeightPx to 1
+            //containerHeightPx - cardHeightPx to 1
+            (cardHeightPx+defaultOffsetPx)*(cardsToPrint.size-1) to 1
         )
+
+        //Swipe state for every single card item
+        val listSwipeState = cardsToPrint.map {
+            rememberSwipeableState(0)
+        }
 
         val coroutineScope = rememberCoroutineScope()
 
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(cardHeight)
-                .offset { IntOffset(0, swipeableState.offset.value.roundToInt()) }
-                .pointerInput(Unit) {
-                    detectVerticalDragGestures(
-                        onDragEnd = {
-                            coroutineScope.launch {
-                                swipeableState.animateTo(swipeableState.currentValue)
+        cardsToPrint.indices.forEach { index ->
+
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(cardHeight)
+                    .offset {
+                        IntOffset(
+                            x = 0,
+                            //y = swipeableState.offset.value.roundToInt()
+                            y = listSwipeState[index].offset.value.roundToInt()
+                        )
+                    }
+                    .pointerInput(Unit) {
+                        detectVerticalDragGestures(
+                            onDragEnd = {
+                                coroutineScope.launch {
+                                    listSwipeState[index].animateTo(listSwipeState[index].currentValue)
+                                }
+                            }
+                        ) { change, dragAmount ->
+                            if (index == cardsToPrint.lastIndex) {
+                                val newOffset = listSwipeState[index].offset.value + dragAmount
+                                listSwipeState[index].performDrag(newOffset)
                             }
                         }
-                    ) { change, dragAmount ->
-                        val newOffset = swipeableState.offset.value + dragAmount
-                        swipeableState.performDrag(newOffset)
                     }
+                    .swipeable(
+                        orientation = Orientation.Vertical,
+                        state = listSwipeState[index],
+                        anchors = anchors,
+                        thresholds = { _, _ -> FractionalThreshold(0.3f) }
+                    ),
+                elevation = 10.dp,
+                shape = RoundedCornerShape(10.dp),
+                border = BorderStroke(1.dp, Color.Black),
+            ) {
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                ) {
+                    Image(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        painter = painterResource(R.drawable.card_mx_tdc),
+                        contentDescription = "Card",
+                        contentScale = ContentScale.FillBounds
+                    )
+                    Text(
+                        modifier = Modifier.align(Alignment.Center),
+                        text = "Card $index",
+                        color = Color.White
+                    )
                 }
-                .swipeable(
-                    orientation = Orientation.Vertical,
-                    state = swipeableState,
-                    anchors = anchors,
-                    thresholds = { _, _ -> FractionalThreshold(0.5f) }
-                ),
-            elevation = 10.dp,
-            shape = RoundedCornerShape(10.dp),
-            border = BorderStroke(1.dp, Color.Black),
-        ) {
-            Image(
-                modifier = Modifier
-                    .fillMaxSize(),
-                painter = painterResource(R.drawable.card_mx_tdc),
-                contentDescription = "Card",
-                contentScale = ContentScale.FillBounds
-            )
+            }
+
         }
 
         Divider(

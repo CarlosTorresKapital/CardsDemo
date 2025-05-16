@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import com.example.demo.ui.CardStack
 import com.example.demo.ui.CleanDrag
 import com.example.demo.ui.theme.PrimaryBlack
 import kotlin.math.roundToInt
@@ -69,7 +70,7 @@ fun DragScreen() {
                 )
             }
 
-            CleanDrag(
+            CardStack(
                 modifier = Modifier
                     .weight(1f)
                     .background(Color.Cyan)

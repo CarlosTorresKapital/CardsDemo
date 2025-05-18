@@ -70,7 +70,7 @@ fun DragScreen() {
                 )
             }
 
-            CardStack(
+            CleanDrag(
                 modifier = Modifier
                     .weight(1f)
                     .background(Color.Cyan)

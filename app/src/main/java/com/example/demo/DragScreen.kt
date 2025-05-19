@@ -20,6 +20,8 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.rememberSwipeableState
 import androidx.compose.material.swipeable
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
@@ -72,7 +74,6 @@ fun DragScreen() {
 
             CleanDrag(
                 modifier = Modifier
-                    .weight(1f)
                     .background(Color.Cyan)
             )
         }

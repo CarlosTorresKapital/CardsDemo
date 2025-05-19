@@ -1,7 +1,10 @@
 package com.example.demo.ui
 
+import android.widget.Toast
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Box
@@ -11,15 +14,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
-import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FractionalThreshold
 import androidx.compose.material.Text
 import androidx.compose.material.rememberSwipeableState
 import androidx.compose.material.swipeable
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -46,27 +52,46 @@ fun CleanDrag(
     modifier: Modifier = Modifier
 ) {
 
-    val cardsToPrint = listOf(1, 2)
+    val context = LocalContext.current
+
+    val cardsToPrint = listOf(1, 2, 3, 4)
+
+    val cardHeight = 190.dp
+    val cardHeightPx = with(LocalDensity.current) {
+        cardHeight.toPx()
+    }
+
+    //Swipe state for every single card item
+    val listSwipeState = cardsToPrint.map {
+        rememberSwipeableState(0)
+    }
+
+
+    val defaultOffset = 30.dp
+    val defaultOffsetPx = with(LocalDensity.current) {
+        defaultOffset.toPx()
+    }
+
+    val totalHeight = remember {
+        derivedStateOf {
+            val maxOffset = listSwipeState.last().offset.value
+            val offsetTotal = defaultOffsetPx * (cardsToPrint.size - 1)
+            (cardHeightPx * cardsToPrint.size) + maxOffset + offsetTotal
+        }
+    }
 
     BoxWithConstraints(
         modifier = modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp)
+            .fillMaxWidth()
+            .height(with(LocalDensity.current) { totalHeight.value.toDp() })
+            .animateContentSize()
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
 
         val boxHeightDP = this.maxHeight
         val containerHeightPx = with(LocalDensity.current) {
             boxHeightDP.toPx()
-        }
-
-        val defaultOffset = 30.dp
-        val defaultOffsetPx = with(LocalDensity.current) {
-            defaultOffset.toPx()
-        }
-
-        val cardHeight = 190.dp
-        val cardHeightPx = with(LocalDensity.current) {
-            cardHeight.toPx()
         }
 
         val swipeableState = rememberSwipeableState(0)
@@ -77,14 +102,8 @@ fun CleanDrag(
         } else {
             mapOf(
                 0f to 0,
-                //containerHeightPx - cardHeightPx to 1
                 (cardHeightPx) * (cardsToPrint.size - 1) to 1
             )
-        }
-
-        //Swipe state for every single card item
-        val listSwipeState = cardsToPrint.map {
-            rememberSwipeableState(0)
         }
 
         val coroutineScope = rememberCoroutineScope()
@@ -100,10 +119,17 @@ fun CleanDrag(
                     .fillMaxWidth()
                     .height(cardHeight)
                     .offset {
+                        val lastIndex = cardsToPrint.lastIndex
+                        val lastOffset = listSwipeState[lastIndex].offset.value
+
+                        val unitOffset = if (lastIndex > 0) lastOffset / lastIndex else 0f
+                        val reactiveOffset = unitOffset * index
+
+                        val baseOffset = defaultOffsetPx * index // separa visualmente las cards
+
                         IntOffset(
                             x = 0,
-                            //y = swipeableState.offset.value.roundToInt()
-                            y = listSwipeState[index].offset.value.roundToInt() + (index * defaultOffsetPx).toInt()
+                            y = (reactiveOffset + baseOffset).roundToInt()
                         )
                     }
                     .then(
@@ -129,7 +155,6 @@ fun CleanDrag(
                                     thresholds = { _, _ -> FractionalThreshold(0.3f) }
                                 )
                         } else Modifier
-
                     ),
                 elevation = 10.dp,
                 shape = RoundedCornerShape(10.dp),
@@ -139,6 +164,9 @@ fun CleanDrag(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
+                        .clickable {
+                            Toast.makeText(context, "$index", Toast.LENGTH_SHORT).show()
+                        }
                 ) {
                     Image(
                         modifier = Modifier

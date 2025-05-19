@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -76,18 +77,23 @@ fun CleanDrag(
         defaultOffset.toPx()
     }
 
-    val totalHeight = remember {
-        derivedStateOf {
-            val maxOffset = listSwipeState.last().offset.value
-            val offsetTotal = defaultOffsetPx * (cardsToPrint.size - 1)
-            (cardHeightPx * cardsToPrint.size) + maxOffset + offsetTotal
-        }
+    val maxOffsetPx = cardHeightPx * (cardsToPrint.size - 1) // El ancla máxima del swipe
+    val initialOffsetDp = 64.dp
+    val finalOffsetDp = 16.dp
+
+    val initialOffsetPx = with(LocalDensity.current) { initialOffsetDp.toPx() }
+    val finalOffsetPx = with(LocalDensity.current) { finalOffsetDp.toPx() }
+
+    val currentDrag = listSwipeState.last().offset.value.coerceIn(0f, maxOffsetPx)
+
+    val interpolatedOffsetPx = remember(currentDrag) {
+        initialOffsetPx - (currentDrag / maxOffsetPx) * (initialOffsetPx - finalOffsetPx)
     }
 
     BoxWithConstraints(
         modifier = modifier
             .fillMaxWidth()
-            .height(with(LocalDensity.current) { totalHeight.value.toDp() })
+            .fillMaxHeight()
             .animateContentSize()
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 16.dp, vertical = 8.dp)
@@ -124,7 +130,7 @@ fun CleanDrag(
                     index = index,
                     cardsToPrint = cardsToPrint,
                     listSwipeState = listSwipeState,
-                    defaultOffsetPx = defaultOffsetPx
+                    defaultOffsetPx = interpolatedOffsetPx
                 )
 
                 Card(

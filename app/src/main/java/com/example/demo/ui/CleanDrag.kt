@@ -5,6 +5,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -181,7 +182,9 @@ fun CleanDrag(
                                             detectVerticalDragGestures(
                                                 onDragEnd = {
                                                     coroutineScope.launch {
-                                                        listSwipeState[index].animateTo(listSwipeState[index].currentValue)
+                                                        listSwipeState[index].animateTo(
+                                                            listSwipeState[index].currentValue
+                                                        )
                                                     }
                                                 }
                                             ) { change, dragAmount ->
@@ -248,9 +251,12 @@ fun DynamicHeightSpacer(
 
     var collapseHeight by remember { mutableStateOf(false) }
 
+    var animateInitially by remember { mutableStateOf(true) }
 
     LaunchedEffect(true) {
         collapseHeight = true
+        delay(200)
+        animateInitially = false
     }
 
     // Cálculo del height dinámico (similar al offset original)
@@ -270,8 +276,14 @@ fun DynamicHeightSpacer(
 
     val heightDemo by animateDpAsState(
         targetValue = if (collapseHeight) heightDp.value.dp else 500.dp,
-        animationSpec = tween(durationMillis = 500)
+        animationSpec = if (animateInitially) {
+            tween(durationMillis = 500)
+        } else {
+            snap() // Cambio instantáneo, sin animación
+        },
+        label = "heightAnim"
     )
 
     Spacer(modifier = Modifier.height(heightDemo))
+
 }

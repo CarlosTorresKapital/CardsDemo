@@ -147,7 +147,7 @@ fun CleanDrag(
                 modifier = Modifier.fillMaxSize(),
                 visible = cardsVisibility,
                 enter = if (index != 0) { //La primar tarjeta no hace la animacion
-                    fadeIn(tween(200)) + slideInVertically(
+                    fadeIn(tween(500)) + slideInVertically(
                         initialOffsetY = { it },
                         animationSpec = spring(
                             dampingRatio = Spring.DampingRatioLowBouncy,
@@ -155,7 +155,7 @@ fun CleanDrag(
                         )
                     )
                 } else {
-                    fadeIn(tween(200))
+                    fadeIn(tween(500))
                 }
             ){
 

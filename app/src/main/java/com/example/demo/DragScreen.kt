@@ -13,9 +13,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FractionalThreshold
+import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.rememberSwipeableState
 import androidx.compose.material.swipeable
@@ -43,7 +45,9 @@ fun DragScreen() {
     val sizePx = with(LocalDensity.current) { squareSize.toPx() }
     val anchors = mapOf(0f to 0, sizePx to 1) // Puntos de anclaje (px) -> estados
 
-    Scaffold { padding ->
+    Scaffold(
+        modifier = Modifier.systemBarsPadding()
+    ) { padding ->
 
         Column(
             modifier = Modifier
@@ -51,7 +55,7 @@ fun DragScreen() {
                 .fillMaxSize()
         ) {
 
-            Box(
+            Row(
                 modifier = Modifier
                     .width(width)
                     .background(Color.LightGray)
@@ -70,6 +74,7 @@ fun DragScreen() {
                         .size(squareSize)
                         .background(PrimaryBlack)
                 )
+
             }
 
             CleanDrag(

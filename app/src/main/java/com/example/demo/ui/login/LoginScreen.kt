@@ -7,6 +7,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,23 +18,31 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.demo.R
 
@@ -44,6 +53,10 @@ fun LoginScreen(
 
     var stepCount by remember { mutableIntStateOf(0) }
     var previousStep by remember { mutableIntStateOf(0) }
+
+    var email by remember {
+        mutableStateOf("")
+    }
 
     LaunchedEffect(stepCount) {
         previousStep = stepCount
@@ -66,6 +79,7 @@ fun LoginScreen(
                     .fillMaxSize()
             ) {
 
+                //region leftDots
                 Box(
                     modifier = Modifier
                         .fillMaxHeight()
@@ -156,6 +170,12 @@ fun LoginScreen(
                                     Icon(
                                         painter = painterResource(R.drawable.baseline_circle_24),
                                         contentDescription = "check",
+                                        tint = Color.Gray
+                                    )
+
+                                    Icon(
+                                        painter = painterResource(R.drawable.baseline_circle_24),
+                                        contentDescription = "check",
                                         tint = Color.White
                                     )
 
@@ -188,6 +208,18 @@ fun LoginScreen(
                                     horizontalAlignment = Alignment.CenterHorizontally,
                                     verticalArrangement = Arrangement.Center
                                 ) {
+
+                                    Icon(
+                                        painter = painterResource(R.drawable.baseline_circle_24),
+                                        contentDescription = "check",
+                                        tint = Color.Gray
+                                    )
+
+                                    Icon(
+                                        painter = painterResource(R.drawable.baseline_circle_24),
+                                        contentDescription = "check",
+                                        tint = Color.Gray
+                                    )
 
                                     Icon(
                                         painter = painterResource(R.drawable.baseline_circle_24),
@@ -242,12 +274,15 @@ fun LoginScreen(
 
                     }
                 }
+                //endregion
 
+                //region rightSteps
                 Box(
                     modifier = Modifier
                         .fillMaxHeight()
                         .weight(8f)
                 ) {
+
                     AnimatedContent(
                         modifier = Modifier
                             .fillMaxSize(),
@@ -264,9 +299,9 @@ fun LoginScreen(
                             )
                         },
                         label = ""
-                    ) {
+                    ) { stepCounter ->
 
-                        when(it){
+                        when(stepCounter){
 
                             0 -> {
 
@@ -276,6 +311,36 @@ fun LoginScreen(
                                     horizontalAlignment = Alignment.CenterHorizontally,
                                     verticalArrangement = Arrangement.Center
                                 ) {
+
+                                    OutlinedTextField(
+                                        modifier = Modifier
+                                            .padding(16.dp)
+                                            .fillMaxWidth(),
+                                        value = email,
+                                        onValueChange = { newEmail ->
+                                            email = newEmail
+                                        },
+                                        shape = RoundedCornerShape(8.dp),
+                                        label = {
+                                            Text(text = "Correo electrónico")
+                                        },
+                                        placeholder = {
+                                            Text(text = "correo@dominio.com")
+                                        },
+                                        colors = OutlinedTextFieldDefaults.colors(
+                                            focusedBorderColor = Color.White,
+                                            unfocusedBorderColor = Color.White,
+                                            cursorColor = Color.White,
+                                            unfocusedPlaceholderColor = Color.Gray,
+                                            unfocusedTextColor = Color.White,
+                                            focusedPlaceholderColor = Color.Gray,
+                                            focusedTextColor = Color.White,
+                                            focusedContainerColor = Color.Black,
+                                            unfocusedContainerColor = Color.Black,
+                                            focusedLabelColor = Color.White,
+                                            unfocusedLabelColor = Color.White,
+                                        ),
+                                    )
 
                                     Spacer(
                                         modifier =
@@ -287,15 +352,27 @@ fun LoginScreen(
                                             .fillMaxWidth()
                                     ) {
 
-                                        Button(
+                                        OutlinedButton(
                                             modifier = Modifier
+                                                .padding(16.dp)
                                                 .fillMaxWidth(),
+                                            shape = RoundedCornerShape(16.dp),
+                                            colors = ButtonDefaults.outlinedButtonColors(
+                                                containerColor = Color.Black,
+                                            ),
+                                            border = BorderStroke(
+                                                width = 1.dp,
+                                                color = Color.White
+                                            ),
                                             onClick = {
                                                 stepCount += 1
                                             }
                                         ) {
 
-                                            Text("Siguiente")
+                                            Text(
+                                                "Siguiente",
+                                                color = Color.White
+                                            )
 
                                         }
 
@@ -314,6 +391,14 @@ fun LoginScreen(
                                     verticalArrangement = Arrangement.Center
                                 ) {
 
+                                    Text(
+                                        modifier = Modifier
+                                            .fillMaxWidth(),
+                                        text = email,
+                                        color = Color.Gray,
+                                        textAlign = TextAlign.Start
+                                    )
+
                                     Spacer(
                                         modifier =
                                         Modifier.weight(1f)
@@ -324,27 +409,51 @@ fun LoginScreen(
                                             .fillMaxWidth()
                                     ) {
 
-                                        Button(
+                                        OutlinedButton(
                                             modifier = Modifier
+                                                .padding(16.dp)
                                                 .weight(1f),
+                                            shape = RoundedCornerShape(16.dp),
+                                            colors = ButtonDefaults.outlinedButtonColors(
+                                                containerColor = Color.Black,
+                                            ),
+                                            border = BorderStroke(
+                                                width = 1.dp,
+                                                color = Color.White
+                                            ),
                                             onClick = {
                                                 stepCount -= 1
                                             }
                                         ) {
 
-                                            Text("Anterior")
+                                            Text(
+                                                "Anterior",
+                                                color = Color.White
+                                            )
 
                                         }
 
-                                        Button(
+                                        OutlinedButton(
                                             modifier = Modifier
+                                                .padding(16.dp)
                                                 .weight(1f),
+                                            shape = RoundedCornerShape(16.dp),
+                                            colors = ButtonDefaults.outlinedButtonColors(
+                                                containerColor = Color.Black,
+                                            ),
+                                            border = BorderStroke(
+                                                width = 1.dp,
+                                                color = Color.White
+                                            ),
                                             onClick = {
                                                 stepCount += 1
                                             }
                                         ) {
 
-                                            Text("Siguiente")
+                                            Text(
+                                                "Siguiente",
+                                                color = Color.White
+                                            )
 
                                         }
 
@@ -373,27 +482,51 @@ fun LoginScreen(
                                             .fillMaxWidth()
                                     ) {
 
-                                        Button(
+                                        OutlinedButton(
                                             modifier = Modifier
+                                                .padding(16.dp)
                                                 .weight(1f),
+                                            shape = RoundedCornerShape(16.dp),
+                                            colors = ButtonDefaults.outlinedButtonColors(
+                                                containerColor = Color.Black,
+                                            ),
+                                            border = BorderStroke(
+                                                width = 1.dp,
+                                                color = Color.White
+                                            ),
                                             onClick = {
                                                 stepCount -= 1
                                             }
                                         ) {
 
-                                            Text("Anterior")
+                                            Text(
+                                                "Anterior",
+                                                color = Color.White
+                                            )
 
                                         }
 
-                                        Button(
+                                        OutlinedButton(
                                             modifier = Modifier
+                                                .padding(16.dp)
                                                 .weight(1f),
+                                            shape = RoundedCornerShape(16.dp),
+                                            colors = ButtonDefaults.outlinedButtonColors(
+                                                containerColor = Color.Black,
+                                            ),
+                                            border = BorderStroke(
+                                                width = 1.dp,
+                                                color = Color.White
+                                            ),
                                             onClick = {
                                                 stepCount += 1
                                             }
                                         ) {
 
-                                            Text("Siguiente")
+                                            Text(
+                                                "Siguiente",
+                                                color = Color.White
+                                            )
 
                                         }
 
@@ -422,26 +555,50 @@ fun LoginScreen(
                                             .fillMaxWidth()
                                     ) {
 
-                                        Button(
+                                        OutlinedButton(
                                             modifier = Modifier
+                                                .padding(16.dp)
                                                 .weight(1f),
+                                            shape = RoundedCornerShape(16.dp),
+                                            colors = ButtonDefaults.outlinedButtonColors(
+                                                containerColor = Color.Black,
+                                            ),
+                                            border = BorderStroke(
+                                                width = 1.dp,
+                                                color = Color.White
+                                            ),
                                             onClick = {
                                                 stepCount -= 1
                                             }
                                         ) {
 
-                                            Text("Anterior")
+                                            Text(
+                                                "Anterior",
+                                                color = Color.White
+                                            )
 
                                         }
 
-                                        Button(
+                                        OutlinedButton(
                                             modifier = Modifier
+                                                .padding(16.dp)
                                                 .weight(1f),
+                                            shape = RoundedCornerShape(16.dp),
+                                            colors = ButtonDefaults.outlinedButtonColors(
+                                                containerColor = Color.Black,
+                                            ),
+                                            border = BorderStroke(
+                                                width = 1.dp,
+                                                color = Color.White
+                                            ),
                                             onClick = {
                                             }
                                         ) {
 
-                                            Text("Terminar")
+                                            Text(
+                                                "Terminar",
+                                                color = Color.White
+                                            )
 
                                         }
 
@@ -459,6 +616,7 @@ fun LoginScreen(
 
                     }
                 }
+                //endregion
 
             }
 

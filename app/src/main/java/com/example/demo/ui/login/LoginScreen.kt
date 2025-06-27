@@ -2,6 +2,7 @@ package com.example.demo.ui.login
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
@@ -16,12 +17,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
@@ -29,10 +30,10 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -56,6 +57,12 @@ fun LoginScreen(
 
     var email by remember {
         mutableStateOf("")
+    }
+    var password by remember {
+        mutableStateOf("")
+    }
+    val isEmailContinueButtonEnabled by remember {
+        derivedStateOf { email.isNotEmpty() }
     }
 
     LaunchedEffect(stepCount) {
@@ -250,6 +257,21 @@ fun LoginScreen(
                                     horizontalAlignment = Alignment.CenterHorizontally,
                                     verticalArrangement = Arrangement.Center
                                 ) {
+                                    Icon(
+                                        painter = painterResource(R.drawable.baseline_circle_24),
+                                        contentDescription = "check",
+                                        tint = Color.Gray
+                                    )
+                                    Icon(
+                                        painter = painterResource(R.drawable.baseline_circle_24),
+                                        contentDescription = "check",
+                                        tint = Color.Gray
+                                    )
+                                    Icon(
+                                        painter = painterResource(R.drawable.baseline_circle_24),
+                                        contentDescription = "check",
+                                        tint = Color.Gray
+                                    )
 
                                     Icon(
                                         painter = painterResource(R.drawable.baseline_circle_24),
@@ -307,9 +329,10 @@ fun LoginScreen(
 
                                 Column(
                                     modifier = Modifier
-                                        .fillMaxHeight(),
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalArrangement = Arrangement.Center
+                                        .fillMaxHeight()
+                                        .imePadding()
+                                        .animateContentSize(),
+                                    verticalArrangement = Arrangement.SpaceBetween
                                 ) {
 
                                     OutlinedTextField(
@@ -342,11 +365,6 @@ fun LoginScreen(
                                         ),
                                     )
 
-                                    Spacer(
-                                        modifier =
-                                        Modifier.weight(1f)
-                                    )
-
                                     Row(
                                         modifier = Modifier
                                             .fillMaxWidth()
@@ -359,13 +377,17 @@ fun LoginScreen(
                                             shape = RoundedCornerShape(16.dp),
                                             colors = ButtonDefaults.outlinedButtonColors(
                                                 containerColor = Color.Black,
+                                                disabledContainerColor = Color.Gray
                                             ),
                                             border = BorderStroke(
                                                 width = 1.dp,
                                                 color = Color.White
                                             ),
+                                            enabled = isEmailContinueButtonEnabled,
                                             onClick = {
-                                                stepCount += 1
+                                                if (email.isNotEmpty()){
+                                                    stepCount += 1
+                                                }
                                             }
                                         ) {
 
@@ -397,6 +419,36 @@ fun LoginScreen(
                                         text = email,
                                         color = Color.Gray,
                                         textAlign = TextAlign.Start
+                                    )
+
+                                    OutlinedTextField(
+                                        modifier = Modifier
+                                            .padding(16.dp)
+                                            .fillMaxWidth(),
+                                        value = password,
+                                        onValueChange = { newPassword ->
+                                            password = newPassword
+                                        },
+                                        shape = RoundedCornerShape(8.dp),
+                                        label = {
+                                            Text(text = "Contraseña")
+                                        },
+                                        placeholder = {
+                                            Text(text = "*******")
+                                        },
+                                        colors = OutlinedTextFieldDefaults.colors(
+                                            focusedBorderColor = Color.White,
+                                            unfocusedBorderColor = Color.White,
+                                            cursorColor = Color.White,
+                                            unfocusedPlaceholderColor = Color.Gray,
+                                            unfocusedTextColor = Color.White,
+                                            focusedPlaceholderColor = Color.Gray,
+                                            focusedTextColor = Color.White,
+                                            focusedContainerColor = Color.Black,
+                                            unfocusedContainerColor = Color.Black,
+                                            focusedLabelColor = Color.White,
+                                            unfocusedLabelColor = Color.White,
+                                        ),
                                     )
 
                                     Spacer(
@@ -446,7 +498,9 @@ fun LoginScreen(
                                                 color = Color.White
                                             ),
                                             onClick = {
-                                                stepCount += 1
+                                                if (password.isNotEmpty()){
+                                                    stepCount += 1
+                                                }
                                             }
                                         ) {
 

@@ -10,13 +10,8 @@ import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInVertically
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -24,17 +19,12 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Card
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FractionalThreshold
 import androidx.compose.material.SwipeableState
-import androidx.compose.material.Text
 import androidx.compose.material.rememberSwipeableState
 import androidx.compose.material.swipeable
 import androidx.compose.runtime.Composable
@@ -45,22 +35,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import com.example.demo.R
 import com.example.demo.ui.theme.CardDesign
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlin.math.roundToInt
 
 @Preview(showBackground = true)
 @OptIn(ExperimentalMaterialApi::class)
@@ -71,7 +54,7 @@ fun CleanDrag(
 
     val context = LocalContext.current
 
-    val cardsToPrint = listOf(1, 2, 3, 4)
+    val cardsToPrint = listOf(1,2,3,4,5)
 
     val cardHeight = 190.dp
     val cardHeightPx = with(LocalDensity.current) {
@@ -81,12 +64,6 @@ fun CleanDrag(
     //Swipe state for every single card item
     val listSwipeState = cardsToPrint.map {
         rememberSwipeableState(0)
-    }
-
-
-    val defaultOffset = 30.dp
-    val defaultOffsetPx = with(LocalDensity.current) {
-        defaultOffset.toPx()
     }
 
     val maxOffsetPx = cardHeightPx * (cardsToPrint.size - 1) // El ancla máxima del swipe
@@ -99,7 +76,11 @@ fun CleanDrag(
     val currentDrag = listSwipeState.last().offset.value.coerceIn(0f, maxOffsetPx)
 
     val interpolatedOffsetPx = remember(currentDrag) {
-        initialOffsetPx - (currentDrag / maxOffsetPx) * (initialOffsetPx - finalOffsetPx)
+        if (maxOffsetPx == 0f) {
+            initialOffsetPx // sin interpolación si solo hay 1 tarjeta
+        } else {
+            initialOffsetPx - (currentDrag / maxOffsetPx) * (initialOffsetPx - finalOffsetPx)
+        }
     }
 
     BoxWithConstraints(
@@ -114,7 +95,6 @@ fun CleanDrag(
         val boxWidthDP = this.maxWidth
         val limitedWidth = boxWidthDP / 4
 
-        val swipeableState = rememberSwipeableState(0)
         val anchors = if (cardsToPrint.size == 1) {
             mapOf(
                 0f to 0
@@ -146,29 +126,23 @@ fun CleanDrag(
             AnimatedVisibility(
                 modifier = Modifier.fillMaxSize(),
                 visible = cardsVisibility,
-                enter = if (index != 0) { //La primar tarjeta no hace la animacion
-                    fadeIn(tween(500)) + slideInVertically(
+                enter = fadeIn(tween(500)) + slideInVertically(
                         initialOffsetY = { it },
                         animationSpec = spring(
                             dampingRatio = Spring.DampingRatioLowBouncy,
                             stiffness = Spring.StiffnessLow
                         )
                     )
-                } else {
-                    fadeIn(tween(500))
-                }
             ) {
 
                 Column {
 
-                    if (index != 0) {
-                        DynamicHeightSpacer(
-                            index = index,
-                            cardsToPrint = cardsToPrint,
-                            listSwipeState = listSwipeState,
-                            defaultOffsetPx = interpolatedOffsetPx
-                        )
-                    }
+                    DynamicHeightSpacer(
+                        index = index,
+                        cardsToPrint = cardsToPrint,
+                        listSwipeState = listSwipeState,
+                        defaultOffsetPx = interpolatedOffsetPx
+                    )
 
                     CardDesign(
                         containerModifier = Modifier
@@ -182,15 +156,19 @@ fun CleanDrag(
                                     detectVerticalDragGestures(
                                         onDragEnd = {
                                             coroutineScope.launch {
-                                                listSwipeState.last().animateTo(
-                                                    listSwipeState.last().currentValue
-                                                )
+                                                listSwipeState
+                                                    .last()
+                                                    .animateTo(
+                                                        listSwipeState.last().currentValue
+                                                    )
                                             }
                                         }
                                     ) { change, dragAmount ->
                                         val newOffset =
                                             listSwipeState.last().offset.value + dragAmount
-                                        listSwipeState.last().performDrag(newOffset)
+                                        listSwipeState
+                                            .last()
+                                            .performDrag(newOffset)
                                     }
                                 }
                                 .swipeable(
@@ -245,7 +223,11 @@ fun DynamicHeightSpacer(
             val lastIndex = cardsToPrint.lastIndex
             val lastOffset = listSwipeState[lastIndex].offset.value
 
-            val unitOffset = if (lastIndex > 0) lastOffset / lastIndex else 0f
+            val unitOffset = if (lastIndex == 0) {
+                0f // No hay deslizamiento posible con un solo elemento
+            } else {
+                lastOffset / lastIndex
+            }
             val reactiveOffset = unitOffset * index
             val baseOffset = defaultOffsetPx * index
 

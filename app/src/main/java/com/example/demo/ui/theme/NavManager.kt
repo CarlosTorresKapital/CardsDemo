@@ -15,7 +15,7 @@ fun NavManager() {
 
     NavHost(
         navController = navController,
-        startDestination = "Login"
+        startDestination = "Drag"
     ){
 
         composable (

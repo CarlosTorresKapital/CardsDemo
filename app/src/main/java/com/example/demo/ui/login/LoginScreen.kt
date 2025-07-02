@@ -102,199 +102,215 @@ fun LoginScreen(
                         color = Color.White
                     )
 
-                    AnimatedContent(
+                    Column(
                         modifier = Modifier
                             .fillMaxHeight()
                             .align(Alignment.Center),
-                        targetState = stepCount,
-                        transitionSpec = {
-                            if (isForward) {
-                                slideInVertically { height -> height } + fadeIn() togetherWith
-                                        slideOutVertically { height -> -height } + fadeOut()
-                            } else {
-                                slideInVertically { height -> -height } + fadeIn() togetherWith
-                                        slideOutVertically { height -> height } + fadeOut()
-                            }.using(
-                                SizeTransform(clip = false)
-                            )
-                        },
-                        label = ""
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.Center
                     ) {
 
-                        when (it){
-
-                            0 -> {
-
-                                Column(
-                                    modifier = Modifier
-                                        .fillMaxHeight(),
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalArrangement = Arrangement.Center
-                                ) {
-
-                                    Icon(
-                                        painter = painterResource(R.drawable.baseline_circle_24),
-                                        contentDescription = "check",
-                                        tint = Color.White
-                                    )
-
-                                    Spacer(
-                                        modifier =
-                                            Modifier.weight(1f)
-                                    )
-
-                                    Icon(
-                                        painter = painterResource(R.drawable.baseline_circle_24),
-                                        contentDescription = "check",
-                                        tint = Color.Gray
-                                    )
-
-                                    Icon(
-                                        painter = painterResource(R.drawable.baseline_circle_24),
-                                        contentDescription = "check",
-                                        tint = Color.Gray
-                                    )
-
-                                    Icon(
-                                        painter = painterResource(R.drawable.baseline_circle_24),
-                                        contentDescription = "check",
-                                        tint = Color.Gray
-                                    )
-
-                                }
-
-                            }
-
-                            1 -> {
-
-                                Column(
-                                    modifier = Modifier
-                                        .fillMaxHeight(),
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalArrangement = Arrangement.Center
-                                ) {
-
-                                    Icon(
-                                        painter = painterResource(R.drawable.baseline_circle_24),
-                                        contentDescription = "check",
-                                        tint = Color.Gray
-                                    )
-
-                                    Icon(
-                                        painter = painterResource(R.drawable.baseline_circle_24),
-                                        contentDescription = "check",
-                                        tint = Color.White
-                                    )
-
-                                    Spacer(
-                                        modifier =
-                                        Modifier.weight(1f)
-                                    )
-
-                                    Icon(
-                                        painter = painterResource(R.drawable.baseline_circle_24),
-                                        contentDescription = "check",
-                                        tint = Color.Gray
-                                    )
-
-                                    Icon(
-                                        painter = painterResource(R.drawable.baseline_circle_24),
-                                        contentDescription = "check",
-                                        tint = Color.Gray
-                                    )
-
-                                }
-
-                            }
-
-                            2 -> {
-
-                                Column(
-                                    modifier = Modifier
-                                        .fillMaxHeight(),
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalArrangement = Arrangement.Center
-                                ) {
-
-                                    Icon(
-                                        painter = painterResource(R.drawable.baseline_circle_24),
-                                        contentDescription = "check",
-                                        tint = Color.Gray
-                                    )
-
-                                    Icon(
-                                        painter = painterResource(R.drawable.baseline_circle_24),
-                                        contentDescription = "check",
-                                        tint = Color.Gray
-                                    )
-
-                                    Icon(
-                                        painter = painterResource(R.drawable.baseline_circle_24),
-                                        contentDescription = "check",
-                                        tint = Color.White
-                                    )
-
-                                    Spacer(
-                                        modifier =
-                                        Modifier.weight(1f)
-                                    )
-
-                                    Icon(
-                                        painter = painterResource(R.drawable.baseline_circle_24),
-                                        contentDescription = "check",
-                                        tint = Color.Gray
-                                    )
-
-                                }
-
-                            }
-
-                            3 -> {
-
-                                Column(
-                                    modifier = Modifier
-                                        .fillMaxHeight(),
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalArrangement = Arrangement.Center
-                                ) {
-                                    Icon(
-                                        painter = painterResource(R.drawable.baseline_circle_24),
-                                        contentDescription = "check",
-                                        tint = Color.Gray
-                                    )
-                                    Icon(
-                                        painter = painterResource(R.drawable.baseline_circle_24),
-                                        contentDescription = "check",
-                                        tint = Color.Gray
-                                    )
-                                    Icon(
-                                        painter = painterResource(R.drawable.baseline_circle_24),
-                                        contentDescription = "check",
-                                        tint = Color.Gray
-                                    )
-
-                                    Icon(
-                                        painter = painterResource(R.drawable.baseline_circle_24),
-                                        contentDescription = "check",
-                                        tint = Color.White
-                                    )
-
-                                    Spacer(
-                                        modifier =
-                                        Modifier.weight(1f)
-                                    )
-
-                                }
-
-                            }
-
-                            else -> {
-
-                            }
-
-                        }
+                        Icon(
+                            painter = painterResource(R.drawable.baseline_circle_24),
+                            contentDescription = "check",
+                            tint = Color.White
+                        )
 
                     }
+
+//                    AnimatedContent(
+//                        modifier = Modifier
+//                            .fillMaxHeight()
+//                            .align(Alignment.Center),
+//                        targetState = stepCount,
+//                        transitionSpec = {
+//                            if (isForward) {
+//                                slideInVertically { height -> height } + fadeIn() togetherWith
+//                                        slideOutVertically { height -> -height } + fadeOut()
+//                            } else {
+//                                slideInVertically { height -> -height } + fadeIn() togetherWith
+//                                        slideOutVertically { height -> height } + fadeOut()
+//                            }.using(
+//                                SizeTransform(clip = false)
+//                            )
+//                        },
+//                        label = ""
+//                    ) {
+//
+//                        when (it){
+//
+//                            0 -> {
+//
+//                                Column(
+//                                    modifier = Modifier
+//                                        .fillMaxHeight(),
+//                                    horizontalAlignment = Alignment.CenterHorizontally,
+//                                    verticalArrangement = Arrangement.Center
+//                                ) {
+//
+//                                    Icon(
+//                                        painter = painterResource(R.drawable.baseline_circle_24),
+//                                        contentDescription = "check",
+//                                        tint = Color.White
+//                                    )
+//
+//                                    Spacer(
+//                                        modifier =
+//                                            Modifier.weight(1f)
+//                                    )
+//
+//                                    Icon(
+//                                        painter = painterResource(R.drawable.baseline_circle_24),
+//                                        contentDescription = "check",
+//                                        tint = Color.Gray
+//                                    )
+//
+//                                    Icon(
+//                                        painter = painterResource(R.drawable.baseline_circle_24),
+//                                        contentDescription = "check",
+//                                        tint = Color.Gray
+//                                    )
+//
+//                                    Icon(
+//                                        painter = painterResource(R.drawable.baseline_circle_24),
+//                                        contentDescription = "check",
+//                                        tint = Color.Gray
+//                                    )
+//
+//                                }
+//
+//                            }
+//
+//                            1 -> {
+//
+//                                Column(
+//                                    modifier = Modifier
+//                                        .fillMaxHeight(),
+//                                    horizontalAlignment = Alignment.CenterHorizontally,
+//                                    verticalArrangement = Arrangement.Center
+//                                ) {
+//
+//                                    Icon(
+//                                        painter = painterResource(R.drawable.baseline_circle_24),
+//                                        contentDescription = "check",
+//                                        tint = Color.Gray
+//                                    )
+//
+//                                    Icon(
+//                                        painter = painterResource(R.drawable.baseline_circle_24),
+//                                        contentDescription = "check",
+//                                        tint = Color.White
+//                                    )
+//
+//                                    Spacer(
+//                                        modifier =
+//                                        Modifier.weight(1f)
+//                                    )
+//
+//                                    Icon(
+//                                        painter = painterResource(R.drawable.baseline_circle_24),
+//                                        contentDescription = "check",
+//                                        tint = Color.Gray
+//                                    )
+//
+//                                    Icon(
+//                                        painter = painterResource(R.drawable.baseline_circle_24),
+//                                        contentDescription = "check",
+//                                        tint = Color.Gray
+//                                    )
+//
+//                                }
+//
+//                            }
+//
+//                            2 -> {
+//
+//                                Column(
+//                                    modifier = Modifier
+//                                        .fillMaxHeight(),
+//                                    horizontalAlignment = Alignment.CenterHorizontally,
+//                                    verticalArrangement = Arrangement.Center
+//                                ) {
+//
+//                                    Icon(
+//                                        painter = painterResource(R.drawable.baseline_circle_24),
+//                                        contentDescription = "check",
+//                                        tint = Color.Gray
+//                                    )
+//
+//                                    Icon(
+//                                        painter = painterResource(R.drawable.baseline_circle_24),
+//                                        contentDescription = "check",
+//                                        tint = Color.Gray
+//                                    )
+//
+//                                    Icon(
+//                                        painter = painterResource(R.drawable.baseline_circle_24),
+//                                        contentDescription = "check",
+//                                        tint = Color.White
+//                                    )
+//
+//                                    Spacer(
+//                                        modifier =
+//                                        Modifier.weight(1f)
+//                                    )
+//
+//                                    Icon(
+//                                        painter = painterResource(R.drawable.baseline_circle_24),
+//                                        contentDescription = "check",
+//                                        tint = Color.Gray
+//                                    )
+//
+//                                }
+//
+//                            }
+//
+//                            3 -> {
+//
+//                                Column(
+//                                    modifier = Modifier
+//                                        .fillMaxHeight(),
+//                                    horizontalAlignment = Alignment.CenterHorizontally,
+//                                    verticalArrangement = Arrangement.Center
+//                                ) {
+//                                    Icon(
+//                                        painter = painterResource(R.drawable.baseline_circle_24),
+//                                        contentDescription = "check",
+//                                        tint = Color.Gray
+//                                    )
+//                                    Icon(
+//                                        painter = painterResource(R.drawable.baseline_circle_24),
+//                                        contentDescription = "check",
+//                                        tint = Color.Gray
+//                                    )
+//                                    Icon(
+//                                        painter = painterResource(R.drawable.baseline_circle_24),
+//                                        contentDescription = "check",
+//                                        tint = Color.Gray
+//                                    )
+//
+//                                    Icon(
+//                                        painter = painterResource(R.drawable.baseline_circle_24),
+//                                        contentDescription = "check",
+//                                        tint = Color.White
+//                                    )
+//
+//                                    Spacer(
+//                                        modifier =
+//                                        Modifier.weight(1f)
+//                                    )
+//
+//                                }
+//
+//                            }
+//
+//                            else -> {
+//
+//                            }
+//
+//                        }
+//
+//                    }
                 }
                 //endregion
 

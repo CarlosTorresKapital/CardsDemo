@@ -1,5 +1,6 @@
 package com.example.demo.ui
 
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -35,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
@@ -49,6 +51,8 @@ fun WalletScreen() {
 
     // ID de la tarjeta seleccionada (nulo si ninguna está seleccionada)
     var selectedCardId by remember { mutableStateOf<Int?>(null) }
+
+    val context = LocalContext.current
 
     BoxWithConstraints(
         modifier = Modifier
@@ -91,23 +95,26 @@ fun WalletScreen() {
                     .height(200.dp)
                     .offset(y = cardOffset)
                     .clickable {
-                        selectedCardId =
-                            if (selectedCardId != null && selectedCardId == index) {
-                                null
-                            } else {
-                                index
-                            }
+                        if (selectedCardId == index) {
+                            Toast.makeText(context, "NavToDetail", Toast.LENGTH_SHORT).show()
+                        } else if (selectedCardId != null) {
+                            selectedCardId = null
+                        } else {
+                            selectedCardId = index
+                        }
                     },
                 border = BorderStroke(1.dp, Color.Black),
                 shape = RoundedCornerShape(16.dp)
             ) {
                 Box(modifier = Modifier.fillMaxSize()) {
                     Text(
-                        text = "Hola: $cardId",
+                        text = "Hola: $index",
                         modifier = Modifier.align(Alignment.TopCenter)
                     )
                 }
             }
+
+            Text(selectedCardId.toString(), modifier = Modifier.align(Alignment.Center))
         }
     }
 }

@@ -6,6 +6,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.demo.DragScreen
 import com.example.demo.StackedCards
+import com.example.demo.ui.WalletScreen
 import com.example.demo.ui.login.LoginScreen
 
 @Composable
@@ -15,7 +16,7 @@ fun NavManager() {
 
     NavHost(
         navController = navController,
-        startDestination = "Drag"
+        startDestination = "wallet"
     ){
 
         composable (
@@ -38,6 +39,12 @@ fun NavManager() {
             route = "Login"
         ){
             LoginScreen()
+        }
+
+        composable(
+            route = "wallet"
+        ){
+            WalletScreen()
         }
 
     }

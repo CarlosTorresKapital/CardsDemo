@@ -45,9 +45,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun WalletScreen() {
     // Estado de las tarjetas
-    var cards by remember {
-        mutableStateOf(listOf(1, 2, 3, 4, 5))
-    }
+    var cards by remember { mutableStateOf(listOf(1, 2, 3, 4, 5)) }
 
     // ID de la tarjeta seleccionada (nulo si ninguna está seleccionada)
     var selectedCardId by remember { mutableStateOf<Int?>(null) }
@@ -62,20 +60,18 @@ fun WalletScreen() {
         contentAlignment = Alignment.TopCenter
     ) {
         val screenHeight = maxHeight
+        val screenHeightPx = with(LocalDensity.current) { maxHeight.toPx() }
 
-        cards.forEachIndexed { index, cardId ->
+        cards.forEachIndexed { index, _ ->
 
             val inverseIndex = cards.size - 1 - index
             val inverseSelectedIndex = cards.size - 1 - (selectedCardId ?: 0)
 
+            // offset apilado tipo Wallet
             val cardOffset by animateDpAsState(
                 targetValue = when {
-                    selectedCardId == null -> {
-                        (index * 20).dp
-                    }
-                    selectedCardId == index -> {
-                        0.dp
-                    }
+                    selectedCardId == null -> (index * 20).dp
+                    selectedCardId == index -> 0.dp
                     else -> {
                         val rest =
                             if (inverseIndex < inverseSelectedIndex) inverseIndex + 1 else inverseIndex
@@ -89,10 +85,27 @@ fun WalletScreen() {
                 )
             )
 
+            // animación de entrada desde abajo
+            val entryAnim = remember { Animatable(screenHeightPx) }
+            LaunchedEffect(Unit) {
+                entryAnim.animateTo(
+                    targetValue = 0f,
+                    animationSpec = tween(
+                        durationMillis = 600,
+                        easing = FastOutSlowInEasing
+                    )
+                )
+            }
+
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(200.dp)
+                    // entrada inicial
+                    .graphicsLayer {
+                        translationY = entryAnim.value
+                    }
+                    // apilado dinámico
                     .offset(y = cardOffset)
                     .clickable {
                         if (selectedCardId == index) {
@@ -113,8 +126,6 @@ fun WalletScreen() {
                     )
                 }
             }
-
-            Text(selectedCardId.toString(), modifier = Modifier.align(Alignment.Center))
         }
     }
 }

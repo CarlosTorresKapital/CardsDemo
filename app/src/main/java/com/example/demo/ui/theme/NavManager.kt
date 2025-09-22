@@ -22,7 +22,7 @@ fun NavManager() {
         NavHost(
             modifier = Modifier.padding(innerPadding),
             navController = navController,
-            startDestination = "wallet"
+            startDestination = "Cards"
         ){
 
             composable (
@@ -30,7 +30,7 @@ fun NavManager() {
             ) {
                 StackedCards(
                     navToDrag = {
-                        navController.navigate("Drag")
+                        navController.navigate("wallet")
                     }
                 )
             }
